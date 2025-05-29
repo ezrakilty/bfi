@@ -4,6 +4,8 @@
 
 const int COLUMNAR = 0;
 const int DEBUG_IP = 0;
+const int DEBUG_INTERACT = 0;
+const int ECHO_OUTPUT = 1;
 const int INTERACTIVE = 0;
 const int PRINT_HEX = 0;
 
@@ -32,6 +34,7 @@ char *echo4 = "++++ [>,.<-]";
 // Valid BF instructions
 char *valid = "<>+-.,[]";
 
+// Returns true if anything was printed.
 void
 simulate(state *state) {
   int n = 0;
@@ -56,9 +59,11 @@ simulate(state *state) {
       state->ip++;
       break;
     case '.':
-      if (COLUMNAR)
-        printf("               ");
-      putchar(state->scratch[state->dp]);
+      if (ECHO_OUTPUT) {
+        if (COLUMNAR)
+          printf("               ");
+        putchar(state->scratch[state->dp]);
+      }
       if (!INTERACTIVE)
 	      state->outape[state->outi++] = state->scratch[state->dp];
       state->ip++;
@@ -143,16 +148,26 @@ interact(char *tape1, char *tape2, int len, char *result1, char *result2) {
   char *bigtape = malloc(2*len);
   memcpy(bigtape, tape1, len);
   memcpy(bigtape + len, tape2, len);
-  printf("Combined tape:\n");
-  print_bf(bigtape, 2*len);
+  if (DEBUG_INTERACT){
+    printf("Combined tape:\n");
+    print_bf(bigtape, 2*len);
+  }
 
-  char *inputtape = malloc(2*len);
-  make_random(inputtape, 2*len);
-  printf("Random input tape:\n");
-  print_bf(inputtape, 2*len);
+  char *input_tape = malloc(2*len);
+  make_random(input_tape, 2*len);
+  if (DEBUG_INTERACT){
+    printf("Random input tape:\n");
+    print_bf(input_tape, 2*len);
+  }
 
   char *scratch = malloc(30000);
-  char *outape = malloc(2*len);
+
+  char *output_tape = malloc(2*len);
+  make_random(output_tape, 2*len);
+  if (DEBUG_INTERACT){
+    printf("Random output tape:\n");
+    print_bf(output_tape, 2*len);
+  }
 
   state state = {
     program: bigtape,
@@ -160,41 +175,66 @@ interact(char *tape1, char *tape2, int len, char *result1, char *result2) {
     dp: 0,
     scratch: scratch,
     ini: 0,
-    intape: inputtape,
+    intape: input_tape,
     outi: 0,
-    outape: outape
+    outape: output_tape
   };
 
   simulate(&state);
-  printf("Result tape:\n");
-  print_bf(state.outape, 2*len);
+
+  // if (DEBUG_INTERACT){
+  //   if (worthwhile) {
+  //     printf("Combined tape:\n");
+  //     print_bf(bigtape, 2*len);
+  //   }
+  // }
+
+  if (DEBUG_INTERACT) {
+    printf("Result tape:\n");
+    print_bf(state.outape, 2*len);
+  }
 
   memcpy(result1, state.outape, len);
   memcpy(result2, state.outape + len, len);
+
+  free(input_tape);
+  free(scratch);
+  free(output_tape);
 }
 
-int ntapes = 12;
+int ntapes = 8192;
+int generation_limit = 100000;
 
 int tapesize = 80;
 
 int
 main() {
+  unsigned seed;
+  scanf("%d", &seed);
+  srand(seed);
+
   char tapes[ntapes][tapesize];
   for (int i=0; i<ntapes; i++)
     make_random(tapes[i], tapesize);
-  for (int i=0; i<ntapes; i++)
-    print_bf(tapes[i], tapesize);
 
-  int parent1 = 10;
-  int parent2 = 11;
+  for (int generation=0; generation<generation_limit; generation++) {
+    if (generation % 100 == 0)
+      printf("Generation %d\n", generation);
+    if (rand() < 0x000FFFF) {
+      puts("~~ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ~~");
+      for (int i=0; i<ntapes; i++)
+        print_bf(tapes[i], tapesize);
+    }
 
-  char *temp1, *temp2;
-  interact(tapes[parent1], tapes[parent2], tapesize, temp1, temp2);
-  memcpy(tapes[parent1], temp1, tapesize);
-  memcpy(tapes[parent2], temp2, tapesize);
+    int parent1 = rand() % ntapes;
+    int parent2 = rand() % ntapes;
 
-  for (int i=0; i<ntapes; i++)
-    print_bf(tapes[i], tapesize);
-
+    if (DEBUG_INTERACT)
+      printf("Crossing over %d + %d\n", parent1, parent2);
+    char *temp1, *temp2;
+    interact(tapes[parent1], tapes[parent2], tapesize, temp1, temp2);
+    memcpy(tapes[parent1], temp1, tapesize);
+    memcpy(tapes[parent2], temp2, tapesize);
+  }
   return 0;
 }
