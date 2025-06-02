@@ -39,6 +39,15 @@ void
 simulate(state *state) {
   int n = 0;
   while (state->program[state->ip] && (n < MAX_STEPS)) {
+    if (state->dp < 0 || state->dp > SCRATCHSIZE) {
+      break;
+    }
+    if (state->ini < 0 || state->ini > 160) {
+      break;
+    }
+    if (state->outi < 0 || state->outi > 160) {
+      break;
+    }
     if (DEBUG_IP)
       printf("ip %12d\n", state->ip);
     switch (state->program[state->ip]) {
