@@ -11,6 +11,7 @@ const int PRINT_HEX = 0;
 
 const int TAPESIZE = 64;
 const int MAX_STEPS = 1000;
+const int SCRATCHSIZE = 30000;
 
 typedef struct state {
   char *program;
@@ -169,7 +170,7 @@ interact(char *tape1, char *tape2, int len, char *result1, char *result2) {
     print_bf(input_tape, 2*len);
   }
 
-  char *scratch = malloc(30000);
+  char *scratch = malloc(SCRATCHSIZE);
 
   char *output_tape = malloc(2*len);
   make_random(output_tape, 2*len);
