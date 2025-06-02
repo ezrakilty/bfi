@@ -36,8 +36,9 @@ char *echo4 = "++++ [>,.<-]";
 char *valid = "<>+-.,[]";
 
 // Returns true if anything was printed.
-void
+int
 simulate(state *state) {
+  int printed = 0;
   int n = 0;
   while (state->program[state->ip] && (n < MAX_STEPS)) {
     if (state->dp < 0 || state->dp > SCRATCHSIZE) {
@@ -69,6 +70,7 @@ simulate(state *state) {
       state->ip++;
       break;
     case '.':
+      printed++;
       if (ECHO_OUTPUT) {
         if (COLUMNAR)
           printf("               ");
@@ -124,6 +126,7 @@ simulate(state *state) {
     }
     n++;
   }
+  return printed;
 }
 
 void
@@ -190,14 +193,12 @@ interact(char *tape1, char *tape2, int len, char *result1, char *result2) {
     outape: output_tape
   };
 
-  simulate(&state);
+  int worthwhile = simulate(&state);
 
-  // if (DEBUG_INTERACT){
-  //   if (worthwhile) {
-  //     printf("Combined tape:\n");
-  //     print_bf(bigtape, 2*len);
-  //   }
-  // }
+  if (0 && (worthwhile > 10)) {
+    printf("\nProgram that printed something:\n");
+    print_bf(bigtape, 2*len);
+  }
 
   if (DEBUG_INTERACT) {
     printf("Result tape:\n");
