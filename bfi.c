@@ -214,7 +214,7 @@ interact(char *tape1, char *tape2, int len, char *result1, char *result2) {
 }
 
 int ntapes = 8192;
-int generation_limit = 100000;
+int generation_limit = 24000000;
 
 int tapesize = 80;
 
@@ -229,8 +229,8 @@ main() {
     make_random(tapes[i], tapesize);
 
   for (int generation=0; generation<generation_limit; generation++) {
-    if (generation % 100 == 0)
-      printf("Generation %d\n", generation);
+    if (generation % 10000 == 0)
+      printf("\nGeneration %d\n", generation);
     if (rand() < 0x000FFFF) {
       puts("~~ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ~~");
       for (int i=0; i<ntapes; i++)
