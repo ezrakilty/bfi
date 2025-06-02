@@ -221,6 +221,7 @@ int tapesize = 80;
 int
 main() {
   unsigned seed;
+  printf("Enter random seed:\n");
   scanf("%d", &seed);
   srand(seed);
 
