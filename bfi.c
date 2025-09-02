@@ -184,14 +184,14 @@ interact(char *tape1, char *tape2, int len, char *result1, char *result2) {
   }
 
   state state = {
-    program: bigtape,
-    ip: 0,
-    dp: 0,
-    scratch: scratch,
-    ini: 0,
-    intape: input_tape,
-    outi: 0,
-    outape: output_tape
+    .program = bigtape,
+    .ip = 0,
+    .dp = 0,
+    .scratch = scratch,
+    .ini = 0,
+    .intape = input_tape,
+    .outi = 0,
+    .outape = output_tape
   };
 
   int worthwhile = simulate(&state);
