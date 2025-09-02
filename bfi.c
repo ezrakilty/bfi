@@ -35,6 +35,27 @@ char *echo4 = "++++ [>,.<-]";
 // Valid BF instructions
 char *valid = "<>+-.,[]";
 
+void
+print_bf(char *program, int len) {
+  if (PRINT_HEX) {
+    for (int i=0; i<len/4; i += 1)
+      printf("%8x|", ((int*)program)[i]);
+    puts("\n");
+  }
+  printf("~~");
+  for (int i=0; i<len; i += 1){
+    int found = 0;
+    for (int j=0; j<strlen(valid); j++)
+    if (program[i] == valid[j]){
+      printf("%c", program[i]);
+      found = 1;
+    }
+    if (!found)
+    putchar(' ');
+  }
+  puts("~~");
+}
+
 // Returns true if anything was printed.
 int
 simulate(state *state) {
@@ -135,26 +156,6 @@ make_random(char *tape, int len) {
     ((int*)tape)[i] = rand() % 0xFFFFFFFF;
 }
 
-void
-print_bf(char *program, int len) {
-  if (PRINT_HEX) {
-    for (int i=0; i<len/4; i += 1)
-      printf("%8x|", ((int*)program)[i]);
-    puts("\n");
-  }
-  printf("~~");
-  for (int i=0; i<len; i += 1){
-    int found = 0;
-    for (int j=0; j<strlen(valid); j++)
-    if (program[i] == valid[j]){
-      printf("%c", program[i]);
-      found = 1;
-    }
-    if (!found)
-    putchar(' ');
-  }
-  puts("~~");
-}
 
 void
 interact(char *tape1, char *tape2, int len, char *result1, char *result2) {
