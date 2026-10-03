@@ -44,6 +44,10 @@ print_bf(unsigned char *program, int len) {
   printf("~~");
   for (int i=0; i<len; i += 1){
     int found = 0;
+    if (program[i] == 0){
+        printf("0");
+        found = 1;
+    } 
     for (int j=0; j<strlen(valid); j++)
     if (program[i] == valid[j]){
       printf("%c", program[i]);
