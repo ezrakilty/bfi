@@ -16,14 +16,11 @@ const int MAX_STEPS = 1000;
 const int SCRATCHSIZE = 30000;
 
 typedef struct state {
-  char *program;
+  unsigned char *program;
   int ip;
-  int dp;
-  char *scratch;
-  int ini;
-  char *intape;
-  int outi;
-  char *outape;
+  int head0;
+  int head1;
+  unsigned char *inouttape;
 } state;
 
 // Test programs
@@ -35,10 +32,10 @@ char *echo1 = ",.";
 char *echo4 = "++++ [>,.<-]";
 
 // Valid BF instructions
-char *valid = "<>+-.,[]";
+char *valid = "<>{}+-.,[]";
 
 void
-print_bf(char *program, int len) {
+print_bf(unsigned char *program, int len) {
   if (PRINT_HEX) {
     for (int i=0; i<len/4; i += 1)
       printf("%8x|", ((int*)program)[i]);
@@ -74,19 +71,31 @@ simulate(state *state) {
       printf("ip %12d\n", state->ip);
     switch (state->program[state->ip]) {
     case '>':
-      state->dp++;
+      state->head0++;
+      state->head0 = state->head0 % (2*TAPESIZE);
       state->ip++;
       break;
     case '<':
-      state->dp--;
+      state->head0--;
+      if (state->head0 < 0) state->head0 += 2*TAPESIZE;
+      state->ip++;
+      break;
+    case '}':
+      state->head1++;
+      state->head1 = state->head1 % (2*TAPESIZE);
+      state->ip++;
+      break;
+    case '{':
+      state->head1--;
+      if (state->head1 < 0) state->head1 += 2*TAPESIZE;
       state->ip++;
       break;
     case '+':
-      state->scratch[state->dp]++;
+      state->inouttape[state->head0]++;
       state->ip++;
       break;
     case '-':
-      state->scratch[state->dp]--;
+      state->inouttape[state->head0]--;
       state->ip++;
       break;
     case '.':
@@ -94,50 +103,48 @@ simulate(state *state) {
       if (ECHO_OUTPUT) {
         if (COLUMNAR)
           printf("               ");
-        putchar(state->scratch[state->dp]);
+        putchar(state->inouttape[state->head0]);
       }
       if (!INTERACTIVE)
-	      state->outape[state->outi++] = state->scratch[state->dp];
+        state->inouttape[state->head1] = state->inouttape[state->head0];
       state->ip++;
       break;
     case ',':
       if (INTERACTIVE)
-	state->scratch[state->dp] = getchar();
+        state->inouttape[state->head0] = getchar();
       else
-	state->scratch[state->dp] = state->intape[state->ini++];
+        state->inouttape[state->head0] = state->inouttape[state->head1];
       state->ip++;
       break;
     case '[':
-      if (0 == state->scratch[state->dp]) {
+      if (0 == state->inouttape[state->head0]) {
         state->ip++;
         int match_count = 1;
-        while (match_count &&(state->ip < strlen(state->program))) {
-          //printf("  Jumping... %2d\n", state->ip);
-	        if (state->program[state->ip] == '[')
-	          match_count++;
-	        else if (state->program[state->ip] == ']')
-	          match_count--;
-	          state->ip++;
-	        }
+        while (match_count && (state->ip < 2*TAPESIZE)) {
+          if (state->program[state->ip] == '[')
+            match_count++;
+          else if (state->program[state->ip] == ']')
+            match_count--;
+          state->ip++;
+        }
       } else {
-	      state->ip++;
+        state->ip++;
       }
       break;
     case ']':
-      if (0 != state->scratch[state->dp]) {
-	      state->ip--;
-	      int match_count = 1;
-	      while (match_count && (state->ip > 0)) {
-	        //printf("  Jumping... %2d\n", state->ip);
-	        if (state->program[state->ip] == '[')
-	          match_count--;
-	        else if (state->program[state->ip] == ']')
-	          match_count++;
-	          state->ip--;
-	      }
-	      state->ip++;  // instruction after
+      if (0 != state->inouttape[state->head0]) {
+        state->ip--;
+        int match_count = 1;
+        while (match_count && (state->ip > 0)) {
+          if (state->program[state->ip] == '[')
+            match_count--;
+          else if (state->program[state->ip] == ']')
+            match_count++;
+          state->ip--;
+        }
+        state->ip++;  // instruction after
       } else {
-	      state->ip++;
+        state->ip++;
       }
       break;
     default:
@@ -150,47 +157,32 @@ simulate(state *state) {
 }
 
 void
-make_random(char *tape, int len) {
+make_random(unsigned char *tape, int len) {
   for (int i=0; i<len/4; i += 1)
     ((int*)tape)[i] = rand() % 0xFFFFFFFF;
 }
 
-
-void
-interact(char *tape1, char *tape2, int len, char *result1, char *result2) {
-  char *bigtape = malloc(2*len);
+unsigned
+interact(unsigned char *tape1, unsigned char *tape2, int len, unsigned char *result1, unsigned char *result2) {
+  /* if (DEBUG_INTERACT){ */
+  /*   printf("============ ============ ============ ============ ============ ============ ============ ============ ============ ============ ============ ============ ====\n"); */
+  /* } */
+  unsigned char *bigtape = malloc(2*len);
   memcpy(bigtape, tape1, len);
   memcpy(bigtape + len, tape2, len);
   if (DEBUG_INTERACT){
-    printf("Combined tape:\n");
-    print_bf(bigtape, 2*len);
-  }
-
-  char *input_tape = malloc(2*len);
-  make_random(input_tape, 2*len);
-  if (DEBUG_INTERACT){
-    printf("Random input tape:\n");
-    print_bf(input_tape, 2*len);
-  }
-
-  char *scratch = malloc(SCRATCHSIZE);
-
-  char *output_tape = malloc(2*len);
-  make_random(output_tape, 2*len);
-  if (DEBUG_INTERACT){
-    printf("Random output tape:\n");
-    print_bf(output_tape, 2*len);
+    /* printf("Combined tape:\n"); */
+    /* print_bf(bigtape, 2*len); */
   }
 
   state state = {
     .program = bigtape,
     .ip = 0,
-    .dp = 0,
-    .scratch = scratch,
-    .ini = 0,
-    .intape = input_tape,
-    .outi = 0,
-    .outape = output_tape
+    // .head0 = (rand() % (TAPESIZE*2)),
+    .head0 = 0,
+    //.head1 = (rand() % (TAPESIZE*2)),
+    .head1 = 0,
+    .inouttape = bigtape,
   };
 
   int worthwhile = simulate(&state);
@@ -205,12 +197,11 @@ interact(char *tape1, char *tape2, int len, char *result1, char *result2) {
     print_bf(state.outape, 2*len);
   }
 
-  memcpy(result1, state.outape, len);
-  memcpy(result2, state.outape + len, len);
+  memcpy(result1, state.inouttape, len);
+  memcpy(result2, state.inouttape + len, len);
 
-  free(input_tape);
-  free(scratch);
-  free(output_tape);
+  free(bigtape);
+  return worthwhile;
 }
 
 int ntapes = 8192;
@@ -225,7 +216,7 @@ main() {
   scanf("%d", &seed);
   srand(seed);
 
-  char tapes[ntapes][tapesize];
+  unsigned char tapes[ntapes][TAPESIZE];
   for (int i=0; i<ntapes; i++)
     make_random(tapes[i], tapesize);
 
