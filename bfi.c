@@ -14,6 +14,7 @@ const int PRINT_HEX = 0;
 const int TAPESIZE = 80;
 const int MAX_STEPS = 10000;
 const int SCRATCHSIZE = 30000;
+const int PRINT_CADENCE = 10000;
 
 const float MUTATION_RATE = 1e-6;
 
@@ -276,7 +277,7 @@ main() {
   printf("%lx\n", *((unsigned long*)tapes[0]));
 
   for (int generation=0; generation<generation_limit; generation++) {
-    if (generation % 10000 == 0)
+    if (generation % PRINT_CADENCE == 0)
       printf("\nGeneration %d\n", generation);
     if (rand() < 0x000FFFF) {
       puts("~~ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ~~");
