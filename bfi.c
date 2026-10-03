@@ -43,7 +43,7 @@ print_bf(unsigned char *program, int len) {
       printf("%8x|", ((int*)program)[i]);
     puts("\n");
   }
-  printf("~~");
+  printf("//");
   for (int i=0; i<len; i += 1){
     int found = 0;
     if (program[i] == 0){
@@ -58,7 +58,6 @@ print_bf(unsigned char *program, int len) {
     if (!found)
       putchar(' ');
   }
-  puts("~~");
 }
 
 void
