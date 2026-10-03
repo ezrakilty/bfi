@@ -215,7 +215,7 @@ simulate(state *state) {
 void
 make_random(unsigned char *tape, int len) {
   for (int i=0; i<len/4; i += 1)
-    ((int*)tape)[i] = rand() % 0xFFFFFFFF;
+    ((int*)tape)[i] = rand() & 0xFFFFFFFF;
 }
 
 unsigned
