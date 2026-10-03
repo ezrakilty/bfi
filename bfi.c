@@ -246,8 +246,13 @@ interact(unsigned char *tape1, unsigned char *tape2, int len, unsigned char *res
   }
 
   if (DEBUG_INTERACT) {
-    printf("Result tape:\n");
-    print_bf(state.outape, 2*len);
+    if (0 != memcmp(bigtape, state.inouttape, 2*len)) {
+      printf("============ ============ ============ ============ ============ ============ ============ ============ ============ ============ ============ ============ ====\n");
+      printf("Start tape:\n");
+      print_bf(bigtape, 2*len);
+      printf("Result tape:\n");
+      print_bf(state.inouttape, 2*len);
+    }
   }
 
   memcpy(result1, state.inouttape, len);
@@ -295,8 +300,6 @@ main() {
     int parent1 = rand() % ntapes;
     int parent2 = rand() % ntapes;
 
-    if (DEBUG_INTERACT)
-      printf("Crossing over %d + %d\n", parent1, parent2);
     char *temp1, *temp2;
     interact(tapes[parent1], tapes[parent2], tapesize, temp1, temp2);
     memcpy(tapes[parent1], temp1, tapesize);
