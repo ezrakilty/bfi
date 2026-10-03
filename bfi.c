@@ -254,13 +254,13 @@ interact(unsigned char *tape1, unsigned char *tape2, int len, unsigned char *res
   memcpy(result2, state.inouttape + len, len);
 
   free(bigtape);
+
   return worthwhile;
 }
 
 int ntapes = 8192;
 int generation_limit = 24000000;
 
-int tapesize = 80;
 
 int
 main() {
