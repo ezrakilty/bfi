@@ -283,6 +283,8 @@ main() {
   printf("First tape:\n");
   printf("%lx\n", *((unsigned long*)tapes[0]));
 
+  unsigned changes = 0;
+
   for (int generation=0; generation<generation_limit; generation++) {
   for (int interactions=0; interactions<ntapes/2; interactions++) {
     if (generation % PRINT_CADENCE == 0 && interactions == 0) {
