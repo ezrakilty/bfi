@@ -264,7 +264,7 @@ interact(unsigned char *tape1, unsigned char *tape2, int len, unsigned char *res
 }
 
 int ntapes = 8192;
-int generation_limit = 24000000;
+long generation_limit = 20 * 1000L;
 
 // Display this many columns of tapes across the terminal.
 #define display_width 3
