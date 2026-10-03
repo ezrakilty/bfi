@@ -49,12 +49,12 @@ print_bf(unsigned char *program, int len) {
         found = 1;
     } 
     for (int j=0; j<strlen(valid); j++)
-    if (program[i] == valid[j]){
-      printf("%c", program[i]);
-      found = 1;
-    }
+      if (program[i] == valid[j]){
+        printf("%c", program[i]);
+        found = 1;
+      }
     if (!found)
-    putchar(' ');
+      putchar(' ');
   }
   puts("~~");
 }
