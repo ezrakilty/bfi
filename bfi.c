@@ -7,7 +7,7 @@
 const int COLUMNAR = 0;
 const int DEBUG_IP = 0;
 const int DEBUG_INTERACT = 0;
-const int ECHO_OUTPUT = 1;
+const int ECHO_OUTPUT = 0;
 const int INTERACTIVE = 0;
 const int PRINT_HEX = 0;
 
