@@ -261,6 +261,8 @@ interact(unsigned char *tape1, unsigned char *tape2, int len, unsigned char *res
 int ntapes = 8192;
 int generation_limit = 24000000;
 
+// Display this many columns of tapes across the terminal.
+#define display_width 3
 
 int
 main() {
@@ -281,8 +283,12 @@ main() {
       printf("\nGeneration %d\n", generation);
     if (rand() < 0x000FFFF) {
       puts("~~ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ~~");
-      for (int i=0; i<ntapes; i++)
-        print_bf(tapes[i], tapesize);
+      for (int i=0; i<64 * display_width; i++) {
+        print_bf(tapes[i], TAPESIZE);
+        if (i % display_width == display_width - 1) {
+          puts("");
+        }
+      }
     }
 
     int parent1 = rand() % ntapes;
