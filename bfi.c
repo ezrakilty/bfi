@@ -1,3 +1,5 @@
+
+#include <assert.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -62,15 +64,12 @@ simulate(state *state) {
   int printed = 0;
   int n = 0;
   while (state->program[state->ip] && (n < MAX_STEPS)) {
-    if (state->dp < 0 || state->dp > SCRATCHSIZE) {
-      break;
-    }
-    if (state->ini < 0 || state->ini > 160) {
-      break;
-    }
-    if (state->outi < 0 || state->outi > 160) {
-      break;
-    }
+    assert(state->ip >= 0);
+    assert(state->ip < 2 * TAPESIZE);
+    assert(state->head0 >= 0);
+    assert(state->head1 >= 0);
+    assert(state->head0 < 2 * TAPESIZE);
+    assert(state->head1 < 2 * TAPESIZE);
     if (DEBUG_IP)
       printf("ip %12d\n", state->ip);
     switch (state->program[state->ip]) {
