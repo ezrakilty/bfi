@@ -300,14 +300,15 @@ main() {
     int parent1 = rand() % ntapes;
     int parent2 = rand() % ntapes;
 
-    char *temp1, *temp2;
-    interact(tapes[parent1], tapes[parent2], tapesize, temp1, temp2);
-    memcpy(tapes[parent1], temp1, tapesize);
-    memcpy(tapes[parent2], temp2, tapesize);
     if (rand() < RAND_MAX * MUTATION_RATE){
       int mutation_byte = rand() % TAPESIZE;
       tapes[parent1][mutation_byte] = rand() % 256;
     }
+
+    unsigned char temp1[TAPESIZE], temp2[TAPESIZE];
+    changes += interact(tapes[parent1], tapes[parent2], TAPESIZE, temp1, temp2);
+    memcpy(tapes[parent1], temp1, TAPESIZE);
+    memcpy(tapes[parent2], temp2, TAPESIZE);
   }
   }
 
