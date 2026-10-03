@@ -15,6 +15,8 @@ const int TAPESIZE = 64;
 const int MAX_STEPS = 1000;
 const int SCRATCHSIZE = 30000;
 
+const float MUTATION_RATE = 1e-6;
+
 typedef struct state {
   unsigned char *program;
   int ip;
@@ -289,6 +291,10 @@ main() {
     interact(tapes[parent1], tapes[parent2], tapesize, temp1, temp2);
     memcpy(tapes[parent1], temp1, tapesize);
     memcpy(tapes[parent2], temp2, tapesize);
+    if (rand() < RAND_MAX * MUTATION_RATE){
+      int mutation_byte = rand() % TAPESIZE;
+      tapes[parent1][mutation_byte] = rand() % 256;
+    }
   }
   return 0;
 }
