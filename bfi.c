@@ -55,6 +55,57 @@ print_bf(unsigned char *program, int len) {
   puts("~~");
 }
 
+void
+histogram(unsigned char tapes[][TAPESIZE], int ntapes) {
+  unsigned checksum = 0;
+  int jobber[256];
+  for (int i = 0; i < 256; i++)
+  jobber[i] = 0;
+  for (int i = 0; i < ntapes; i++) {
+    for (int j = 0; j < TAPESIZE; j++) {
+      jobber[tapes[i][j]]++;
+      checksum += tapes[i][j];
+    }
+  }
+
+  int TOPSIZE = 32;
+  int heapw[TOPSIZE];
+  int heapv[TOPSIZE];
+  for (int j = 0; j < TOPSIZE; j++) {
+    heapw[j] = 0;
+    heapv[j] = 0;
+  }
+  for (int i = 0; i < 256; i++) {
+    int weight = jobber[i];
+    for (int j = 0; j < TOPSIZE; j++) {
+      if (weight > heapw[j]) {
+        for (int k = TOPSIZE-1; k > j; k--) {
+          heapw[k] = heapw[k-1];
+          heapv[k] = heapv[k-1];
+        }
+        heapw[j] = weight;
+        heapv[j] = i;
+        break;
+      }
+    }
+  }
+  printf("Histogram of most frequent bytes:\n");
+  int total = 0;
+  int watershed = 0;
+  int rows = 20;
+  for (int j = 0; j < TOPSIZE; j++) {
+    if (heapw[j]/10 != watershed) {
+      printf("(%d) ", heapw[j]/10*10);
+      rows--;
+    }
+    printf("%02hhx ", heapv[j]);
+    total += heapw[j];
+    watershed = heapw[j]/10;
+  }
+  printf("\n");
+  printf("WEIGHT OF TOP %d BYTES: %d (checksum %d)\n", TOPSIZE, total, checksum);
+}
+
 // Returns true if anything was printed.
 int
 simulate(state *state) {
