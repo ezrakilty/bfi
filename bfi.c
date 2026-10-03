@@ -207,6 +207,7 @@ simulate(state *state) {
       break;
     }
     n++;
+    if (state->ip >= 2 * TAPESIZE) break;
   }
   return printed;
 }
