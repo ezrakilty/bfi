@@ -279,9 +279,10 @@ main() {
   printf("%lx\n", *((unsigned long*)tapes[0]));
 
   for (int generation=0; generation<generation_limit; generation++) {
-    if (generation % PRINT_CADENCE == 0)
-      printf("\nGeneration %d\n", generation);
-    if (rand() < 0x000FFFF) {
+  for (int interactions=0; interactions<ntapes/2; interactions++) {
+    if (generation % PRINT_CADENCE == 0 && interactions == 0) {
+      printf("\nGeneration %ld\n", generation);
+      histogram(tapes, ntapes);
       puts("~~ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ~~");
       for (int i=0; i<64 * display_width; i++) {
         print_bf(tapes[i], TAPESIZE);
@@ -305,5 +306,7 @@ main() {
       tapes[parent1][mutation_byte] = rand() % 256;
     }
   }
+  }
+
   return 0;
 }
