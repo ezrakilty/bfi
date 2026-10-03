@@ -220,9 +220,6 @@ make_random(unsigned char *tape, int len) {
 
 unsigned
 interact(unsigned char *tape1, unsigned char *tape2, int len, unsigned char *result1, unsigned char *result2) {
-  /* if (DEBUG_INTERACT){ */
-  /*   printf("============ ============ ============ ============ ============ ============ ============ ============ ============ ============ ============ ============ ====\n"); */
-  /* } */
   unsigned char *bigtape = malloc(2*len);
   memcpy(bigtape, tape1, len);
   memcpy(bigtape + len, tape2, len);
@@ -234,9 +231,7 @@ interact(unsigned char *tape1, unsigned char *tape2, int len, unsigned char *res
   state state = {
     .program = bigtape,
     .ip = 0,
-    // .head0 = (rand() % (TAPESIZE*2)),
     .head0 = 0,
-    //.head1 = (rand() % (TAPESIZE*2)),
     .head1 = 0,
     .inouttape = bigtape,
   };
