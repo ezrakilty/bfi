@@ -14,7 +14,7 @@ const int PRINT_HEX = 0;
 const int TAPESIZE = 80;
 const int MAX_STEPS = 10000;
 const int SCRATCHSIZE = 30000;
-const int PRINT_CADENCE = 10000;
+const int PRINT_CADENCE = 20;
 
 const float MUTATION_RATE = 1e-6;
 
